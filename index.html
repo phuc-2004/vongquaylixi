@@ -297,15 +297,18 @@ if(!userId){
      spinning=false;
      showResult(prize);
       // gửi dữ liệu lên Google Sheet
-fetch("https://script.google.com/macros/s/AKfycbzEP6-PVbMRgy5dV9t5UPVzCsfOaRrOvNZaOIdIanVCSCixNAov0IRoG23N0fqTL8eS/exec", {
+fetch("https://script.google.com/macros/s/AKfycbwBIM1_FiuI6o60RIeKqHbkESxpM0Dm6ShL-Qpw-Tc/dev", {
   method: "POST",
-  body: JSON.stringify({
-    prize: prize
-  }),
+  mode: "no-cors",
   headers: {
     "Content-Type": "application/json"
-  }
+  },
+  body: JSON.stringify({
+    userId: userId,
+    prize: currentPrize
+  })
 });
+
 
    }
  }
@@ -324,4 +327,5 @@ lixiIcon.onload=function(){
 
 </body>
 </html>
+
 
