@@ -16,13 +16,13 @@ body{
 }
 
 h1{
-  margin-top:30px;
-  font-size:42px;
+  margin-top:25px;
+  font-size:28px;
   color:darkred;
 }
 
 canvas{
-  margin-top:30px;
+  margin-top:20px;
   width:90vw;
   max-width:500px;
   height:auto;
@@ -30,8 +30,8 @@ canvas{
 
 button{
   margin-top:20px;
-  padding:15px 40px;
-  font-size:20px;
+  padding:14px 35px;
+  font-size:18px;
   background:darkred;
   color:white;
   border:none;
@@ -73,19 +73,14 @@ button{
   transition:transform 0.4s ease;
 }
 
-#lixiImage.opened{
-  transform:scale(1.05);
-}
-
 #rewardText{
   position:absolute;
   top:120px;
   left:50%;
   transform:translateX(-50%);
-  font-size:26px;
+  font-size:24px;
   font-weight:bold;
   color:darkred;
-  text-shadow:0 0 6px white;
   display:none;
 }
 
@@ -95,7 +90,7 @@ button{
 
 #closeBtn{
   margin-top:20px;
-  padding:12px 35px;
+  padding:12px 30px;
   font-size:18px;
   border-radius:15px;
   background:darkred;
@@ -109,7 +104,7 @@ button{
 
 <h1>🎡 Vòng Quay Lì Xì May Mắn 🎁</h1>
 
-<canvas id="wheel" width="500" height="500"></canvas>
+<canvas id="wheel"></canvas>
 <br>
 <button id="spinBtn">🎲 QUAY NGAY</button>
 
@@ -130,6 +125,17 @@ button{
 <script>
 const canvas=document.getElementById("wheel");
 const ctx=canvas.getContext("2d");
+
+function resizeCanvas(){
+  let size=Math.min(window.innerWidth*0.9,500);
+  canvas.width=size;
+  canvas.height=size;
+}
+resizeCanvas();
+window.addEventListener("resize",()=>{
+  resizeCanvas();
+  drawWheel();
+});
 
 const spinBtn=document.getElementById("spinBtn");
 const modal=document.getElementById("modal");
@@ -157,9 +163,9 @@ lixiIcon.src="images/lixi.png";
 
 function drawWheel(){
  let center=canvas.width/2;
- let wheelRadius=canvas.width*0.44;
- let iconRadius=canvas.width*0.30;
- let iconSize=canvas.width*0.11;
+ let wheelRadius=canvas.width*0.45;
+ let iconRadius=canvas.width*0.32;
+ let iconSize=canvas.width*0.12;
 
  ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -174,6 +180,7 @@ function drawWheel(){
    ctx.stroke();
 
    let mid=start+sliceAngle/2;
+
    let x=center+iconRadius*Math.cos(mid);
    let y=center+iconRadius*Math.sin(mid);
 
@@ -188,16 +195,16 @@ function drawWheel(){
    ctx.rotate(mid);
    ctx.textAlign="right";
    ctx.fillStyle="darkred";
-   ctx.font=(canvas.width*0.045)+"px Arial";
+   ctx.font=(canvas.width*0.05)+"px Arial";
    ctx.fillText(prizes[i].name,wheelRadius-10,10);
    ctx.restore();
  }
 
  ctx.fillStyle="darkred";
  ctx.beginPath();
- ctx.moveTo(center-15,20);
- ctx.lineTo(center+15,20);
- ctx.lineTo(center,70);
+ ctx.moveTo(center-15,10);
+ ctx.lineTo(center+15,10);
+ ctx.lineTo(center,60);
  ctx.fill();
 }
 
@@ -213,7 +220,6 @@ function getPrize(){
 function showResult(prize){
  finalReward=prize;
  lixiImage.src="images/lixi.png";
- lixiImage.classList.remove("opened");
  rewardText.innerHTML="";
  rewardText.classList.remove("show");
  modal.style.display="flex";
@@ -221,7 +227,6 @@ function showResult(prize){
 
 lixiImage.onclick=function(){
  lixiImage.src="images/lixi_open.png";
- lixiImage.classList.add("opened");
  rewardText.innerHTML=finalReward;
  rewardText.classList.add("show");
 };
