@@ -141,6 +141,8 @@ button{
 </div>
 
 <script>
+const FIRST_TIME_PRIZE = "❤️ nhỏ bé của Phúc";
+
 const canvas=document.getElementById("wheel");
 const ctx=canvas.getContext("2d");
 
@@ -164,11 +166,11 @@ const rewardText=document.getElementById("rewardText");
 const prizes=[
  {name:"50K",weight:0},
  {name:"100K",weight:10},
- {name:"200K",weight:30},
+ {name:"200K",weight:40},
  {name:"300K",weight:10},
  {name:"400K",weight:0},
  {name:"500k",weight:0},
- {name:"❤️ nhỏ bé của Phúc",weight:50}
+ {name:"❤️ nhỏ bé của Phúc",weight:40}
 ];
 
 const sliceAngle=(2*Math.PI)/prizes.length;
@@ -182,8 +184,6 @@ lixiIcon.src="images/lixi.png";
 function drawWheel(){
  let center=canvas.width/2;
  let wheelRadius=canvas.width*0.45;
-
- // 🔥 Đưa lì xì gần tâm hơn
  let iconRadius=canvas.width*0.22; 
  let iconSize=canvas.width*0.12;
 
@@ -195,13 +195,11 @@ function drawWheel(){
    ctx.beginPath();
    ctx.moveTo(center,center);
    ctx.arc(center,center,wheelRadius,start,start+sliceAngle);
-
-   ctx.fillStyle="#FFD700"; // vàng
+   ctx.fillStyle="#FFD700";
    ctx.fill();
    ctx.stroke();
 
    let mid=start+sliceAngle/2;
-
    let x=center+iconRadius*Math.cos(mid);
    let y=center+iconRadius*Math.sin(mid);
 
@@ -243,23 +241,18 @@ function createFirework(){
  fw.style.left=Math.random()*100+"%";
  fw.style.top=Math.random()*100+"%";
  document.querySelector(".modal-content").appendChild(fw);
-
  setTimeout(()=>fw.remove(),1000);
 }
 
 lixiImage.onclick=function(){
-
- // 1️⃣ hiện hình mở trước
  lixiImage.src="images/lixi_open.png";
 
- // 2️⃣ sau 500ms tạo pháo hoa
  setTimeout(()=>{
    for(let i=0;i<20;i++){
      createFirework();
    }
  },500);
 
- // 3️⃣ sau 1000ms mới hiện chữ
  setTimeout(()=>{
    rewardText.innerHTML=finalReward;
    rewardText.style.display="block";
@@ -270,19 +263,28 @@ spinBtn.onclick=function(){
  if(spinning) return;
  spinning=true;
 
- let prize=getPrize();
+ // 🔥 tạo UID
+ let userId = localStorage.getItem("userId");
+ if(!userId){
+   userId = "USER_" + Math.random().toString(36).substring(2,10);
+   localStorage.setItem("userId", userId);
+ }
+
+ // 🔥 kiểm tra đã quay chưa
+ let hasSpun = localStorage.getItem("hasSpun");
+ let prize;
+
+ if(!hasSpun){
+   prize = FIRST_TIME_PRIZE;
+   localStorage.setItem("hasSpun","true");
+ }else{
+   prize = getPrize();
+ }
+
  let spinTime=0;
  let spinTimeTotal=6000;
  let startSpeed=0.25;
  let currentSpeed=startSpeed;
-  // tạo ID riêng cho mỗi trình duyệt
-let userId = localStorage.getItem("userId");
-
-if(!userId){
-  userId = "USER_" + Math.random().toString(36).substring(2,10);
-  localStorage.setItem("userId", userId);
-}
-
 
  function animate(){
    spinTime+=16;
@@ -296,40 +298,17 @@ if(!userId){
    }else{
      spinning=false;
      showResult(prize);
-      // gửi dữ liệu lên Google Sheet
-fetch("https://script.google.com/macros/s/AKfycbxpico6Qy-vKGHH2LTlxYy-OaY4Kx9FUgGX7maCtnfGDp9B1jYR9RhjyX5BdMfruOc/exec", {
-  method: "POST",
-  mode: "no-cors",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    userId: userId,
-    prize: prize
-  })
-});
 
-
-
+     fetch("https://script.google.com/macros/s/AKfycbxpico6Qy-vKGHH2LTlxYy-OaY4Kx9FUgGX7maCtnfGDp9B1jYR9RhjyX5BdMfruOc/exec", {
+       method: "POST",
+       mode: "no-cors",
+       headers: {"Content-Type": "application/json"},
+       body: JSON.stringify({
+         userId: userId,
+         prize: prize
+       })
+     });
    }
  }
 
- animate();
-};
-
-closeBtn.onclick=function(){
- modal.style.display="none";
-};
-
-lixiIcon.onload=function(){
- drawWheel();
-};
-</script>
-
-</body>
-</html>
-
-
-
-
-
+ ani
