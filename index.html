@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vòng Quay Lì Xì May Mắn</title>
+  <title>Mở Lì Xì May Mắn</title>
 
   <style>
     body {
@@ -17,19 +17,13 @@
 
     h1 {
       margin-top: 25px;
-      font-size: 38px;
+      font-size: 34px;
       color: darkred;
-    }
-
-    canvas {
-      margin-top: 25px;
-      max-width: 90vw;
-      height: auto;
     }
 
     button {
       margin-top: 20px;
-      padding: 15px 40px;
+      padding: 14px 35px;
       font-size: 20px;
       background: darkred;
       color: white;
@@ -79,52 +73,69 @@
       display: block;
     }
 
-    /* ================= FIX TEXT ĐÚNG VÙNG VÀNG ================= */
+    /* ================= BOX GIẤY VÀNG (KHÓA VÙNG) ================= */
 
-    #rewardText {
+    .goldBox {
       position: absolute;
 
-      /* ✅ vùng giấy vàng chuẩn trong ảnh */
-      top: 18%;
+      /* ✅ đúng vùng giấy vàng */
+      top: 12%;
       left: 50%;
       transform: translateX(-50%);
 
-      width: 72%;         /* không tràn */
-      max-width: 240px;
+      width: 72%;
+      height: 22%;
 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      overflow: hidden; /* ❌ không tràn ra ngoài */
+      pointer-events: none;
+    }
+
+    /* ================= TEXT QUÀ ================= */
+
+    #rewardText {
       font-size: 22px;
       font-weight: bold;
       color: darkred;
-
       text-align: center;
-      line-height: 1.2;
 
-      /* ✅ xuống dòng chuẩn */
+      max-width: 100%;
+      line-height: 1.25;
+
       white-space: normal;
       word-break: break-word;
-
-      /* ❌ không nền trắng */
-      background: none;
-      padding: 0;
 
       display: none;
     }
 
     #rewardText.show {
       display: block;
-      animation: giftPop 0.5s ease;
+      animation: popText 0.5s ease;
     }
 
-    /* ================= BUTTON ================= */
+    @keyframes popText {
+      0% { transform: scale(0.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
-    #closeBtn {
-      margin-top: 20px;
-      padding: 12px 35px;
-      font-size: 18px;
-      border-radius: 15px;
-      background: darkred;
-      color: white;
-      cursor: pointer;
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 24px;
+      }
+
+      #rewardText {
+        font-size: 18px;
+      }
+
+      .goldBox {
+        top: 12%;
+        height: 23%;
+      }
     }
 
     /* ================= ANIMATION ================= */
@@ -134,38 +145,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    @keyframes giftPop {
-      0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
-      100% { transform: translateX(-50%) scale(1); opacity: 1; }
-    }
-
-    /* ================= MOBILE FIX ================= */
-
-    @media (max-width: 768px) {
-
-      h1 {
-        font-size: 24px;
-      }
-
-      canvas {
-        width: 90vw;
-        height: 90vw;
-        max-width: 380px;
-        max-height: 380px;
-      }
-
-      button {
-        width: 80%;
-        font-size: 18px;
-      }
-
-      #rewardText {
-        font-size: 18px;
-        top: 17%;
-        width: 75%;
-      }
-    }
-
   </style>
 </head>
 
@@ -173,8 +152,6 @@
 
   <h1>🎡 Vòng Quay Lì Xì May Mắn 🎁</h1>
 
-  <canvas id="wheel" width="500" height="500"></canvas>
-  <br>
   <button id="spinBtn">🎲 QUAY NGAY</button>
 
   <!-- MODAL -->
@@ -184,8 +161,14 @@
       <h2>🧧 MỞ LÌ XÌ NHẬN QUÀ</h2>
 
       <div class="lixiBox">
+
         <img id="lixiImage" src="images/lixi_open.png">
-        <div id="rewardText"></div>
+
+        <!-- ✅ BOX GIẤY VÀNG -->
+        <div class="goldBox">
+          <div id="rewardText"></div>
+        </div>
+
       </div>
 
       <br>
@@ -224,12 +207,14 @@
     /* QUAY */
     spinBtn.onclick = function () {
       let prize = getPrize();
+
       modal.style.display = "flex";
 
       rewardText.innerHTML = prize;
       rewardText.classList.add("show");
     };
 
+    /* ĐÓNG */
     closeBtn.onclick = function () {
       modal.style.display = "none";
       rewardText.classList.remove("show");
