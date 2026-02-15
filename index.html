@@ -76,14 +76,13 @@
     .lixiBox {
       position: relative;
       display: inline-block;
-      width: 320px;
-      max-width: 80vw;
     }
 
     /* ================= LÌ XÌ ================= */
 
     #lixiImage {
-      width: 100%;
+      width: 320px;
+      max-width: 85vw;
       cursor: pointer;
       transition: transform 0.4s ease;
     }
@@ -94,24 +93,27 @@
 
     /* ================= QUÀ (FIX CHUẨN) ================= */
 
-    #rewardText {
+    .rewardOverlay {
       position: absolute;
-
-      /* ✅ Canh giữa chuẩn */
+      top: 18%;
       left: 50%;
       transform: translateX(-50%);
 
-      /* ✅ Không dùng px nữa */
-      top: 22%;
+      width: 78%;
+      height: 22%;
 
-      /* ✅ Chữ tự co */
-      width: 90%;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-      font-size: clamp(16px, 4vw, 26px);
+      pointer-events: none;
+    }
+
+    #rewardText {
+      font-size: 24px;
       font-weight: bold;
       color: darkred;
-
+      text-align: center;
       text-shadow: 0 0 6px white;
       display: none;
     }
@@ -144,15 +146,15 @@
 
     @keyframes giftPop {
       0% {
-        transform: translate(-50%, 30px) scale(0.3);
+        transform: scale(0.3);
         opacity: 0;
       }
       70% {
-        transform: translate(-50%, -10px) scale(1.2);
+        transform: scale(1.2);
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, 0px) scale(1);
+        transform: scale(1);
       }
     }
 
@@ -162,7 +164,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      remembered: 100%;
+      width: 100%;
       height: 100%;
       pointer-events: none;
     }
@@ -187,7 +189,7 @@
       }
     }
 
-    /* ================= MOBILE RESPONSIVE ================= */
+    /* ================= MOBILE ================= */
 
     @media (max-width: 768px) {
       h1 {
@@ -195,17 +197,14 @@
         margin-top: 20px;
       }
 
-      canvas {
-        width: 90vw;
-        height: 90vw;
-        max-width: 380px;
-        max-height: 380px;
-      }
-
       button {
         width: 80%;
         font-size: 18px;
         padding: 12px;
+      }
+
+      #rewardText {
+        font-size: 20px;
       }
 
       .modal-content h2 {
@@ -230,7 +229,12 @@
 
       <div class="lixiBox">
         <img id="lixiImage" src="images/lixi.png">
-        <div id="rewardText"></div>
+
+        <!-- Overlay FIX CHUẨN -->
+        <div class="rewardOverlay">
+          <div id="rewardText"></div>
+        </div>
+
         <div id="fireworks"></div>
       </div>
 
@@ -250,17 +254,19 @@
     const lixiImage = document.getElementById("lixiImage");
     const rewardText = document.getElementById("rewardText");
 
+    /* 🎁 PHẦN THƯỞNG + TỶ LỆ */
     const prizes = [
-      { name: "10K", weight: 0 },
-      { name: "50K", weight: 0 },
-      { name: "100K", weight: 0 },
-      { name: "200K", weight: 0 },
-      { name: "500K", weight: 0 },
-      { name: "❤️ nhỏ bé của Phúc", weight: 100 },
-      { name: "1 Triệu", weight: 0 }
+      { name: "10K", weight: 10 },
+      { name: "50K", weight: 20 },
+      { name: "100K", weight: 20 },
+      { name: "200K", weight: 15 },
+      { name: "500K", weight: 10 },
+      { name: "❤️ nhỏ bé của Phúc", weight: 20 },
+      { name: "1 Triệu", weight: 5 }
     ];
 
     const sliceAngle = (2 * Math.PI) / prizes.length;
+
     let angle = 0;
     let spinning = false;
     let finalReward = "";
@@ -268,6 +274,7 @@
     const lixiIcon = new Image();
     lixiIcon.src = "images/lixi.png";
 
+    /* VẼ VÒNG QUAY */
     function drawWheel() {
       let center = canvas.width / 2;
 
@@ -297,6 +304,7 @@
         ctx.restore();
       }
 
+      /* MŨI TÊN */
       ctx.fillStyle = "darkred";
       ctx.beginPath();
       ctx.moveTo(center - 15, 20);
@@ -305,6 +313,7 @@
       ctx.fill();
     }
 
+    /* RANDOM THEO TỶ LỆ */
     function getPrize() {
       let totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
       let rand = Math.random() * totalWeight;
@@ -315,6 +324,7 @@
       }
     }
 
+    /* HIỆN MODAL */
     function showResult(prize) {
       finalReward = prize;
 
@@ -327,6 +337,7 @@
       modal.style.display = "flex";
     }
 
+    /* PHÁO HOA */
     function launchFireworks() {
       const fireworks = document.getElementById("fireworks");
       fireworks.innerHTML = "";
@@ -350,6 +361,7 @@
       setTimeout(() => fireworks.innerHTML = "", 1000);
     }
 
+    /* CLICK MỞ LÌ XÌ */
     lixiImage.onclick = function () {
       lixiImage.src = "images/lixi_open.png";
       lixiImage.classList.add("opened");
@@ -360,6 +372,7 @@
       launchFireworks();
     };
 
+    /* QUAY */
     spinBtn.onclick = function () {
       if (spinning) return;
 
@@ -383,10 +396,12 @@
       }, 50);
     };
 
+    /* ĐÓNG */
     closeBtn.onclick = function () {
       modal.style.display = "none";
     };
 
+    /* LOAD */
     lixiIcon.onload = function () {
       drawWheel();
     };
