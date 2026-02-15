@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Vòng Quay Lì Xì May Mắn</title>
 
   <style>
@@ -61,7 +60,7 @@
     .modal-content {
       background: white;
       width: 650px;
-      max-width: 90%;
+      max-width: 92%;
       border-radius: 25px;
       padding: 30px;
       position: relative;
@@ -77,13 +76,14 @@
     .lixiBox {
       position: relative;
       display: inline-block;
+      width: 320px;
+      max-width: 80vw;
     }
 
     /* ================= LÌ XÌ ================= */
 
     #lixiImage {
-      width: 320px;
-      max-width: 80vw;
+      width: 100%;
       cursor: pointer;
       transition: transform 0.4s ease;
     }
@@ -92,16 +92,26 @@
       transform: scale(1.05);
     }
 
-    /* ================= QUÀ ================= */
+    /* ================= QUÀ (FIX CHUẨN) ================= */
 
     #rewardText {
       position: absolute;
-      top: 120px;
+
+      /* ✅ Canh giữa chuẩn */
       left: 50%;
       transform: translateX(-50%);
-      font-size: 26px;
+
+      /* ✅ Không dùng px nữa */
+      top: 22%;
+
+      /* ✅ Chữ tự co */
+      width: 90%;
+      text-align: center;
+
+      font-size: clamp(16px, 4vw, 26px);
       font-weight: bold;
       color: darkred;
+
       text-shadow: 0 0 6px white;
       display: none;
     }
@@ -121,6 +131,8 @@
       background: darkred;
       color: white;
       cursor: pointer;
+      width: 80%;
+      max-width: 300px;
     }
 
     /* ================= ANIMATION ================= */
@@ -150,7 +162,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
+      remembered: 100%;
       height: 100%;
       pointer-events: none;
     }
@@ -176,8 +188,8 @@
     }
 
     /* ================= MOBILE RESPONSIVE ================= */
-    @media (max-width: 768px) {
 
+    @media (max-width: 768px) {
       h1 {
         font-size: 26px;
         margin-top: 20px;
@@ -196,16 +208,10 @@
         padding: 12px;
       }
 
-      #rewardText {
-        font-size: 22px;
-        top: 95px;
-      }
-
       .modal-content h2 {
         font-size: 24px;
       }
     }
-
   </style>
 </head>
 
@@ -238,7 +244,6 @@
     const ctx = canvas.getContext("2d");
 
     const spinBtn = document.getElementById("spinBtn");
-
     const modal = document.getElementById("modal");
     const closeBtn = document.getElementById("closeBtn");
 
@@ -256,7 +261,6 @@
     ];
 
     const sliceAngle = (2 * Math.PI) / prizes.length;
-
     let angle = 0;
     let spinning = false;
     let finalReward = "";
@@ -286,13 +290,10 @@
         let iconX = center + radius * Math.cos(midAngle);
         let iconY = center + radius * Math.sin(midAngle);
 
-        let w = 45;
-        let h = 60;
-
         ctx.save();
         ctx.translate(iconX, iconY);
         ctx.rotate(midAngle + Math.PI / 2);
-        ctx.drawImage(lixiIcon, -w / 2, -h / 2, w, h);
+        ctx.drawImage(lixiIcon, -22, -30, 45, 60);
         ctx.restore();
       }
 
@@ -337,11 +338,8 @@
         spark.style.left = "50%";
         spark.style.top = "35%";
 
-        let x = (Math.random() - 0.5) * 300 + "px";
-        let y = (Math.random() - 0.5) * 250 + "px";
-
-        spark.style.setProperty("--x", x);
-        spark.style.setProperty("--y", y);
+        spark.style.setProperty("--x", (Math.random() - 0.5) * 300 + "px");
+        spark.style.setProperty("--y", (Math.random() - 0.5) * 250 + "px");
 
         spark.style.background =
           "hsl(" + Math.random() * 360 + ",100%,60%)";
@@ -367,7 +365,6 @@
 
       spinning = true;
       let prize = getPrize();
-
       let spinTime = 0;
 
       let spinInterval = setInterval(() => {
