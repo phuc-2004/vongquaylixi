@@ -13,25 +13,25 @@
       background: linear-gradient(#fff5d6, #ffe4a8);
       margin: 0;
       padding: 0;
-      min-height: 100vh;
     }
 
     h1 {
-      margin-top: 30px;
-      font-size: 42px;
+      margin-top: 20px;
+      font-size: 32px;
       color: darkred;
     }
 
     canvas {
-      margin-top: 30px;
-      max-width: 90vw;
+      margin-top: 20px;
+      width: 90%;
+      max-width: 450px;
       height: auto;
     }
 
     button {
-      margin-top: 20px;
-      padding: 15px 40px;
-      font-size: 20px;
+      margin-top: 15px;
+      padding: 14px 35px;
+      font-size: 18px;
       background: darkred;
       color: white;
       border: none;
@@ -60,30 +60,29 @@
 
     .modal-content {
       background: white;
-      width: 650px;
-      max-width: 90%;
+      width: 90%;
+      max-width: 500px;
       border-radius: 25px;
-      padding: 30px;
-      position: relative;
+      padding: 25px;
       box-shadow: 0 0 25px rgba(0,0,0,0.4);
       animation: popupZoom 0.4s ease;
     }
 
     .modal-content h2 {
-      font-size: 32px;
-      margin-bottom: 20px;
+      font-size: 26px;
+      margin-bottom: 15px;
     }
+
+    /* ================= LÌ XÌ ================= */
 
     .lixiBox {
       position: relative;
       display: inline-block;
     }
 
-    /* ================= LÌ XÌ ================= */
-
     #lixiImage {
-      width: 320px;
-      max-width: 80vw;
+      width: 280px;
+      max-width: 90%;
       cursor: pointer;
       transition: transform 0.4s ease;
     }
@@ -92,55 +91,40 @@
       transform: scale(1.05);
     }
 
-    /* ================= QUÀ ================= */
+    /* ================= QUÀ HIỂN THỊ TRONG LÌ XÌ ================= */
 
     #rewardText {
       position: absolute;
-      top: 120px;
+      top: 45%;
       left: 50%;
-      transform: translateX(-50%);
-      font-size: 26px;
+      transform: translate(-50%, -50%);
+
+      font-size: 20px;
       font-weight: bold;
       color: darkred;
-      text-shadow: 0 0 6px white;
+
+      padding: 6px 14px;
+      border-radius: 12px;
+
+      background: rgba(255, 255, 255, 0.65);
+      border: 2px solid darkred;
+
       display: none;
     }
 
     #rewardText.show {
       display: block;
-      animation: giftPop 0.6s ease;
+      animation: popGift 0.5s ease;
     }
 
-    /* ================= BUTTON ================= */
-
-    #closeBtn {
-      margin-top: 20px;
-      padding: 12px 35px;
-      font-size: 18px;
-      border-radius: 15px;
-      background: darkred;
-      color: white;
-      cursor: pointer;
-    }
-
-    /* ================= ANIMATION ================= */
-
-    @keyframes popupZoom {
-      0% { transform: scale(0.6); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes giftPop {
-      0% {
-        transform: translate(-50%, 30px) scale(0.3);
+    @keyframes popGift {
+      from {
+        transform: translate(-50%, -50%) scale(0.4);
         opacity: 0;
       }
-      70% {
-        transform: translate(-50%, -10px) scale(1.2);
+      to {
+        transform: translate(-50%, -50%) scale(1);
         opacity: 1;
-      }
-      100% {
-        transform: translate(-50%, 0px) scale(1);
       }
     }
 
@@ -157,8 +141,8 @@
 
     .firework {
       position: absolute;
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       opacity: 0.9;
       animation: explode 0.9s ease-out forwards;
@@ -175,35 +159,23 @@
       }
     }
 
-    /* ================= MOBILE RESPONSIVE ================= */
-    @media (max-width: 768px) {
+    /* ================= BUTTON ĐÓNG ================= */
 
-      h1 {
-        font-size: 26px;
-        margin-top: 20px;
-      }
+    #closeBtn {
+      margin-top: 15px;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 15px;
+      background: darkred;
+      color: white;
+      cursor: pointer;
+    }
 
-      canvas {
-        width: 90vw;
-        height: 90vw;
-        max-width: 380px;
-        max-height: 380px;
-      }
+    /* ================= ANIMATION ================= */
 
-      button {
-        width: 80%;
-        font-size: 18px;
-        padding: 12px;
-      }
-
-      #rewardText {
-        font-size: 22px;
-        top: 95px;
-      }
-
-      .modal-content h2 {
-        font-size: 24px;
-      }
+    @keyframes popupZoom {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
   </style>
@@ -238,21 +210,24 @@
     const ctx = canvas.getContext("2d");
 
     const spinBtn = document.getElementById("spinBtn");
-
     const modal = document.getElementById("modal");
     const closeBtn = document.getElementById("closeBtn");
 
     const lixiImage = document.getElementById("lixiImage");
     const rewardText = document.getElementById("rewardText");
 
+    /* ===============================
+       🎁 PHẦN THƯỞNG + TỶ LỆ
+    =============================== */
+
     const prizes = [
-      { name: "10K", weight: 0 },
-      { name: "50K", weight: 0 },
-      { name: "100K", weight: 0 },
-      { name: "200K", weight: 0 },
-      { name: "500K", weight: 0 },
-      { name: "❤️ nhỏ bé của Phúc", weight: 100 },
-      { name: "1 Triệu", weight: 0 }
+      { name: "10K", weight: 10 },
+      { name: "50K", weight: 20 },
+      { name: "100K", weight: 15 },
+      { name: "200K", weight: 10 },
+      { name: "500K", weight: 5 },
+      { name: "❤️ nhỏ bé của Phúc", weight: 35 },
+      { name: "1 Triệu", weight: 5 }
     ];
 
     const sliceAngle = (2 * Math.PI) / prizes.length;
@@ -261,9 +236,13 @@
     let spinning = false;
     let finalReward = "";
 
+    // Icon lì xì
     const lixiIcon = new Image();
     lixiIcon.src = "images/lixi.png";
 
+    /* ===============================
+       VẼ VÒNG QUAY
+    =============================== */
     function drawWheel() {
       let center = canvas.width / 2;
 
@@ -278,24 +257,26 @@
         ctx.fill();
 
         ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
         ctx.stroke();
 
+        // Icon lì xì hướng đúng tâm
         let midAngle = start + sliceAngle / 2;
         let radius = 150;
 
         let iconX = center + radius * Math.cos(midAngle);
         let iconY = center + radius * Math.sin(midAngle);
 
-        let w = 45;
-        let h = 60;
-
         ctx.save();
         ctx.translate(iconX, iconY);
         ctx.rotate(midAngle + Math.PI / 2);
-        ctx.drawImage(lixiIcon, -w / 2, -h / 2, w, h);
+
+        ctx.drawImage(lixiIcon, -22, -30, 45, 60);
+
         ctx.restore();
       }
 
+      // Mũi tên
       ctx.fillStyle = "darkred";
       ctx.beginPath();
       ctx.moveTo(center - 15, 20);
@@ -304,28 +285,22 @@
       ctx.fill();
     }
 
+    /* ===============================
+       RANDOM THEO TỶ LỆ
+    =============================== */
     function getPrize() {
-      let totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
-      let rand = Math.random() * totalWeight;
+      let total = prizes.reduce((sum, p) => sum + p.weight, 0);
+      let rand = Math.random() * total;
 
-      for (let prize of prizes) {
-        if (rand < prize.weight) return prize.name;
-        rand -= prize.weight;
+      for (let p of prizes) {
+        if (rand < p.weight) return p.name;
+        rand -= p.weight;
       }
     }
 
-    function showResult(prize) {
-      finalReward = prize;
-
-      lixiImage.src = "images/lixi.png";
-      lixiImage.classList.remove("opened");
-
-      rewardText.innerHTML = "";
-      rewardText.classList.remove("show");
-
-      modal.style.display = "flex";
-    }
-
+    /* ===============================
+       HIỆU ỨNG PHÁO HOA
+    =============================== */
     function launchFireworks() {
       const fireworks = document.getElementById("fireworks");
       fireworks.innerHTML = "";
@@ -335,13 +310,10 @@
         spark.classList.add("firework");
 
         spark.style.left = "50%";
-        spark.style.top = "35%";
+        spark.style.top = "40%";
 
-        let x = (Math.random() - 0.5) * 300 + "px";
-        let y = (Math.random() - 0.5) * 250 + "px";
-
-        spark.style.setProperty("--x", x);
-        spark.style.setProperty("--y", y);
+        spark.style.setProperty("--x", (Math.random() - 0.5) * 250 + "px");
+        spark.style.setProperty("--y", (Math.random() - 0.5) * 200 + "px");
 
         spark.style.background =
           "hsl(" + Math.random() * 360 + ",100%,60%)";
@@ -352,6 +324,23 @@
       setTimeout(() => fireworks.innerHTML = "", 1000);
     }
 
+    /* ===============================
+       HIỂN THỊ KẾT QUẢ
+    =============================== */
+    function showResult(prize) {
+      finalReward = prize;
+
+      lixiImage.src = "images/lixi.png";
+      lixiImage.classList.remove("opened");
+
+      rewardText.classList.remove("show");
+
+      modal.style.display = "flex";
+    }
+
+    /* ===============================
+       CLICK MỞ LÌ XÌ
+    =============================== */
     lixiImage.onclick = function () {
       lixiImage.src = "images/lixi_open.png";
       lixiImage.classList.add("opened");
@@ -362,15 +351,17 @@
       launchFireworks();
     };
 
+    /* ===============================
+       QUAY
+    =============================== */
     spinBtn.onclick = function () {
       if (spinning) return;
-
       spinning = true;
-      let prize = getPrize();
 
+      let prize = getPrize();
       let spinTime = 0;
 
-      let spinInterval = setInterval(() => {
+      let interval = setInterval(() => {
         angle += 0.25;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -379,17 +370,23 @@
         spinTime += 50;
 
         if (spinTime > 3000) {
-          clearInterval(spinInterval);
+          clearInterval(interval);
           spinning = false;
           showResult(prize);
         }
       }, 50);
     };
 
+    /* ===============================
+       ĐÓNG MODAL
+    =============================== */
     closeBtn.onclick = function () {
       modal.style.display = "none";
     };
 
+    /* ===============================
+       VẼ BAN ĐẦU
+    =============================== */
     lixiIcon.onload = function () {
       drawWheel();
     };
