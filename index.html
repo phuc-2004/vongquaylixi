@@ -176,8 +176,8 @@ function drawWheel(){
    ctx.moveTo(center,center);
    ctx.arc(center,center,wheelRadius,start,start+sliceAngle);
 
-   // 🔴 1 MÀU DUY NHẤT
-   ctx.fillStyle="#E53935";
+   // 🟡 MÀU VÀNG
+   ctx.fillStyle="#FFD700";
    ctx.fill();
    ctx.stroke();
 
@@ -193,7 +193,6 @@ function drawWheel(){
    ctx.restore();
  }
 
- // mũi tên
  ctx.fillStyle="darkred";
  ctx.beginPath();
  ctx.moveTo(center-15,10);
@@ -231,8 +230,8 @@ spinBtn.onclick=function(){
 
  let prize=getPrize();
  let spinTime=0;
- let spinTimeTotal=4500; 
- let startSpeed=0.5;
+ let spinTimeTotal=6000;   // quay lâu hơn → chậm hơn
+ let startSpeed=0.25;      // tốc độ ban đầu nhỏ hơn
  let currentSpeed=startSpeed;
 
  function animate(){
