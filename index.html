@@ -6,113 +6,89 @@
 <title>Vòng Quay Lì Xì May Mắn</title>
 
 <style>
-body {
+body{
   font-family: Arial, sans-serif;
-  text-align: center;
-  background: linear-gradient(#fff5d6, #ffe4a8);
-  margin: 0;
-  min-height: 100vh;
+  text-align:center;
+  background:linear-gradient(#fff5d6,#ffe4a8);
+  margin:0;
+  min-height:100vh;
 }
 
-h1 {
-  margin-top: 25px;
-  font-size: 38px;
-  color: darkred;
+h1{
+  margin-top:25px;
+  font-size:36px;
+  color:darkred;
 }
 
-canvas {
-  margin-top: 25px;
-  width: 90vw;
-  max-width: 500px;
-  aspect-ratio: 1/1;
+canvas{
+  margin-top:25px;
+  width:90vw;
+  max-width:500px;
+  aspect-ratio:1/1;
 }
 
-button {
-  margin-top: 20px;
-  padding: 15px 40px;
-  font-size: 20px;
-  background: darkred;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
+button{
+  margin-top:20px;
+  padding:15px 40px;
+  font-size:20px;
+  background:darkred;
+  color:white;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
 }
 
-button:hover { opacity: 0.9; }
+button:hover{opacity:.9;}
 
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
 }
 
-.modal-content {
-  background: white;
-  width: 650px;
-  max-width: 92%;
-  border-radius: 25px;
-  padding: 25px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.4);
-  animation: popupZoom .4s ease;
+.modal-content{
+  background:white;
+  width:650px;
+  max-width:92%;
+  border-radius:25px;
+  padding:25px;
+  box-shadow:0 0 25px rgba(0,0,0,.4);
 }
 
-.modal-content h2 {
-  font-size: 28px;
+.lixiBox{
+  position:relative;
+  display:inline-block;
 }
 
-.lixiBox {
-  position: relative;
-  display: inline-block;
+#lixiImage{
+  width:300px;
+  max-width:80vw;
+  cursor:pointer;
+  transition:.4s;
 }
 
-#lixiImage {
-  width: 300px;
-  max-width: 80vw;
-  transition: transform .4s ease;
-  cursor: pointer;
+#lixiImage.opened{
+  transform:scale(1.05);
 }
 
-#lixiImage.opened { transform: scale(1.05); }
-
-#rewardText {
-  position: absolute;
-  top: 105px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 24px;
-  font-weight: bold;
-  color: darkred;
-  text-shadow: 0 0 6px white;
-  display: none;
+#rewardText{
+  position:absolute;
+  top:105px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:24px;
+  font-weight:bold;
+  color:darkred;
+  text-shadow:0 0 6px white;
+  display:none;
 }
 
-#rewardText.show {
-  display: block;
-  animation: giftPop .6s ease;
-}
-
-#closeBtn {
-  margin-top: 20px;
-  padding: 12px 35px;
-  font-size: 18px;
-  border-radius: 15px;
-  background: darkred;
-  color: white;
-}
-
-@keyframes popupZoom {
-  0% { transform: scale(.6); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes giftPop {
-  0% { transform: translate(-50%,30px) scale(.3); opacity: 0;}
-  70% { transform: translate(-50%,-10px) scale(1.2); opacity: 1;}
-  100% { transform: translate(-50%,0) scale(1);}
+#rewardText.show{
+  display:block;
 }
 </style>
 </head>
@@ -138,108 +114,126 @@ button:hover { opacity: 0.9; }
 </div>
 
 <script>
-const canvas = document.getElementById("wheel");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("wheel");
+const ctx=canvas.getContext("2d");
 
-const prizes = [
-  { name: "10K", weight: 0 },
-  { name: "50K", weight: 0 },
-  { name: "100K", weight: 0 },
-  { name: "200K", weight: 0 },
-  { name: "500K", weight: 0 },
-  { name: "❤️ nhỏ bé của Phúc", weight: 100 },
-  { name: "1 Triệu", weight: 0 }
+const prizes=[
+  {name:"10K",weight:0},
+  {name:"50K",weight:0},
+  {name:"100K",weight:0},
+  {name:"200K",weight:0},
+  {name:"500K",weight:0},
+  {name:"❤️ nhỏ bé của Phúc",weight:100},
+  {name:"1 Triệu",weight:0}
 ];
 
-let angle = 0;
-let spinning = false;
-let finalReward = "";
+let angle=0;
+let spinning=false;
+let finalReward="";
 
-function resizeCanvas() {
-  let size = Math.min(window.innerWidth * 0.9, 500);
-  canvas.width = size;
-  canvas.height = size;
+function resizeCanvas(){
+  let size=Math.min(window.innerWidth*0.9,500);
+  canvas.width=size;
+  canvas.height=size;
   drawWheel();
 }
 
-function drawWheel() {
-  const center = canvas.width / 2;
-  const radius = center - 20;
-  const slice = 2 * Math.PI / prizes.length;
+function drawWheel(){
+  const center=canvas.width/2;
+  const radius=center-20;
+  const slice=(2*Math.PI)/prizes.length;
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  for (let i = 0; i < prizes.length; i++) {
-    let start = angle + i * slice;
-    let end = start + slice;
+  for(let i=0;i<prizes.length;i++){
+
+    let start=angle+i*slice;
+    let end=start+slice;
 
     ctx.beginPath();
-    ctx.moveTo(center, center);
-    ctx.arc(center, center, radius, start, end);
-    ctx.fillStyle = i % 2 === 0 ? "#FFD84D" : "#FFB300";
+    ctx.moveTo(center,center);
+    ctx.arc(center,center,radius,start,end);
+    ctx.fillStyle=i%2===0?"#FFD84D":"#FFB300";
     ctx.fill();
     ctx.stroke();
 
-    let mid = start + slice / 2;
+    // ===== FIX CHỮ Ở ĐÂY =====
+    let mid=start+slice/2;
+
     ctx.save();
     ctx.translate(
-      center + Math.cos(mid) * (radius - 40),
-      center + Math.sin(mid) * (radius - 40)
+      center+Math.cos(mid)*(radius*0.65),
+      center+Math.sin(mid)*(radius*0.65)
     );
-    ctx.rotate(mid + Math.PI/2);
-    ctx.fillStyle = "darkred";
-    ctx.font = radius * 0.08 + "px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(prizes[i].name, 0, 0);
+
+    ctx.rotate(mid+Math.PI/2);
+
+    ctx.fillStyle="darkred";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+
+    ctx.font=(radius*0.085)+"px Arial";
+
+    ctx.fillText(prizes[i].name,0,0);
+
     ctx.restore();
   }
 
-  ctx.fillStyle = "darkred";
+  // kim chỉ
+  ctx.fillStyle="darkred";
   ctx.beginPath();
-  ctx.moveTo(center - 15, 10);
-  ctx.lineTo(center + 15, 10);
-  ctx.lineTo(center, 60);
+  ctx.moveTo(center-15,10);
+  ctx.lineTo(center+15,10);
+  ctx.lineTo(center,60);
   ctx.fill();
 }
 
-function getPrizeIndex() {
-  let total = prizes.reduce((s,p)=>s+p.weight,0);
-  let rand = Math.random() * total;
-  for (let i=0;i<prizes.length;i++){
-    if(rand < prizes[i].weight) return i;
-    rand -= prizes[i].weight;
+function getPrizeIndex(){
+  let total=prizes.reduce((s,p)=>s+p.weight,0);
+  let rand=Math.random()*total;
+
+  for(let i=0;i<prizes.length;i++){
+    if(rand<prizes[i].weight)return i;
+    rand-=prizes[i].weight;
   }
 }
 
-function spin() {
-  if (spinning) return;
-  spinning = true;
+function spin(){
+  if(spinning)return;
+  spinning=true;
 
-  const prizeIndex = getPrizeIndex();
-  finalReward = prizes[prizeIndex].name;
+  const prizeIndex=getPrizeIndex();
+  finalReward=prizes[prizeIndex].name;
 
-  const slice = 2 * Math.PI / prizes.length;
-  const targetAngle = (3 * 2 * Math.PI) +
-    (prizes.length - prizeIndex) * slice;
+  const slice=(2*Math.PI)/prizes.length;
 
-  const start = angle;
-  const duration = 4000;
-  let startTime = null;
+  // FIX chuẩn vị trí kim trên đỉnh
+  const targetAngle=
+    (5*2*Math.PI) +
+    (Math.PI*1.5) -
+    (prizeIndex*slice) -
+    slice/2;
 
-  function animate(time) {
-    if (!startTime) startTime = time;
-    let progress = (time - startTime) / duration;
-    if (progress > 1) progress = 1;
+  const start=angle;
+  const duration=4000;
+  let startTime=null;
 
-    let ease = 1 - Math.pow(1 - progress, 3);
-    angle = start + ease * (targetAngle);
+  function animate(time){
+    if(!startTime)startTime=time;
+
+    let progress=(time-startTime)/duration;
+    if(progress>1)progress=1;
+
+    let ease=1-Math.pow(1-progress,3);
+
+    angle=start+ease*(targetAngle-start);
 
     drawWheel();
 
-    if (progress < 1) {
+    if(progress<1){
       requestAnimationFrame(animate);
-    } else {
-      spinning = false;
+    }else{
+      spinning=false;
       document.getElementById("modal").style.display="flex";
     }
   }
@@ -247,20 +241,20 @@ function spin() {
   requestAnimationFrame(animate);
 }
 
-document.getElementById("spinBtn").onclick = spin;
+document.getElementById("spinBtn").onclick=spin;
 
-document.getElementById("closeBtn").onclick =
-  ()=> document.getElementById("modal").style.display="none";
+document.getElementById("closeBtn").onclick=
+()=>document.getElementById("modal").style.display="none";
 
-document.getElementById("lixiImage").onclick = function(){
+document.getElementById("lixiImage").onclick=function(){
   this.src="images/lixi_open.png";
   this.classList.add("opened");
-  let txt = document.getElementById("rewardText");
-  txt.innerHTML = finalReward;
+  let txt=document.getElementById("rewardText");
+  txt.innerHTML=finalReward;
   txt.classList.add("show");
 };
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
 </script>
 
