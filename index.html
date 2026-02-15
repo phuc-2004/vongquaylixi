@@ -40,8 +40,6 @@ button{
   cursor:pointer;
 }
 
-/* ===== MODAL ===== */
-
 .modal{
   display:none;
   position:fixed;
@@ -49,31 +47,20 @@ button{
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.65);
+  background:rgba(0,0,0,0.55);
   justify-content:center;
   align-items:center;
   z-index:999;
 }
 
 .modal-content{
-  background:transparent;
-  box-shadow:none;
-  padding:0;
-  border-radius:0;
+  background:white;
+  width:650px;
+  max-width:90%;
+  border-radius:25px;
+  padding:30px;
+  box-shadow:0 0 25px rgba(0,0,0,0.4);
   position:relative;
-  text-align:center;
-}
-
-/* chữ tiêu đề trên nền nâu */
-.modal h2{
-  position:absolute;
-  top:40px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#FFD700;
-  font-size:28px;
-  text-shadow:0 0 10px rgba(0,0,0,0.7);
-  z-index:10;
 }
 
 .lixiBox{
@@ -82,17 +69,18 @@ button{
 }
 
 #lixiImage{
-  width:420px;
-  max-width:90vw;
+  width:320px;
+  max-width:80vw;
   cursor:pointer;
+  transition:transform 0.3s ease;
 }
 
 #rewardText{
   position:absolute;
-  top:150px;
+  top:120px;
   left:50%;
   transform:translateX(-50%);
-  font-size:28px;
+  font-size:26px;
   font-weight:bold;
   color:darkred;
   display:none;
@@ -104,19 +92,14 @@ button{
   to{opacity:1; transform:translate(-50%,0);}
 }
 
-/* nút đóng nằm trên nền nâu */
 #closeBtn{
-  position:absolute;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
+  margin-top:20px;
   padding:12px 30px;
   font-size:18px;
   border-radius:15px;
   background:darkred;
   color:white;
   cursor:pointer;
-  z-index:10;
 }
 
 /* 🎆 pháo hoa */
@@ -150,9 +133,10 @@ button{
     <div class="lixiBox">
       <img id="lixiImage" src="images/lixi.png">
       <div id="rewardText"></div>
-      <button id="closeBtn">Đóng</button>
     </div>
 
+    <br>
+    <button id="closeBtn">Đóng</button>
   </div>
 </div>
 
@@ -198,6 +182,8 @@ lixiIcon.src="images/lixi.png";
 function drawWheel(){
  let center=canvas.width/2;
  let wheelRadius=canvas.width*0.45;
+
+ // 🔥 Đưa lì xì gần tâm hơn
  let iconRadius=canvas.width*0.22; 
  let iconSize=canvas.width*0.12;
 
@@ -209,11 +195,13 @@ function drawWheel(){
    ctx.beginPath();
    ctx.moveTo(center,center);
    ctx.arc(center,center,wheelRadius,start,start+sliceAngle);
-   ctx.fillStyle="#FFD700";
+
+   ctx.fillStyle="#FFD700"; // vàng
    ctx.fill();
    ctx.stroke();
 
    let mid=start+sliceAngle/2;
+
    let x=center+iconRadius*Math.cos(mid);
    let y=center+iconRadius*Math.sin(mid);
 
@@ -255,12 +243,23 @@ function createFirework(){
  fw.style.left=Math.random()*100+"%";
  fw.style.top=Math.random()*100+"%";
  document.querySelector(".modal-content").appendChild(fw);
+
  setTimeout(()=>fw.remove(),1000);
 }
 
 lixiImage.onclick=function(){
+
+ // 1️⃣ hiện hình mở trước
  lixiImage.src="images/lixi_open.png";
- setTimeout(()=>{ for(let i=0;i<20;i++){ createFirework(); } },500);
+
+ // 2️⃣ sau 500ms tạo pháo hoa
+ setTimeout(()=>{
+   for(let i=0;i<20;i++){
+     createFirework();
+   }
+ },500);
+
+ // 3️⃣ sau 1000ms mới hiện chữ
  setTimeout(()=>{
    rewardText.innerHTML=finalReward;
    rewardText.style.display="block";
@@ -276,12 +275,14 @@ spinBtn.onclick=function(){
  let spinTimeTotal=6000;
  let startSpeed=0.25;
  let currentSpeed=startSpeed;
+  // tạo ID riêng cho mỗi trình duyệt
+let userId = localStorage.getItem("userId");
 
- let userId = localStorage.getItem("userId");
- if(!userId){
-   userId = "USER_" + Math.random().toString(36).substring(2,10);
-   localStorage.setItem("userId", userId);
- }
+if(!userId){
+  userId = "USER_" + Math.random().toString(36).substring(2,10);
+  localStorage.setItem("userId", userId);
+}
+
 
  function animate(){
    spinTime+=16;
@@ -295,16 +296,21 @@ spinBtn.onclick=function(){
    }else{
      spinning=false;
      showResult(prize);
+      // gửi dữ liệu lên Google Sheet
+fetch("https://script.google.com/macros/s/AKfycbxpico6Qy-vKGHH2LTlxYy-OaY4Kx9FUgGX7maCtnfGDp9B1jYR9RhjyX5BdMfruOc/exec", {
+  method: "POST",
+  mode: "no-cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    userId: userId,
+    prize: prize
+  })
+});
 
-     fetch("https://script.google.com/macros/s/AKfycbxpico6Qy-vKGHH2LTlxYy-OaY4Kx9FUgGX7maCtnfGDp9B1jYR9RhjyX5BdMfruOc/exec", {
-       method: "POST",
-       mode: "no-cors",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({
-         userId: userId,
-         prize: prize
-       })
-     });
+
+
    }
  }
 
@@ -322,3 +328,6 @@ lixiIcon.onload=function(){
 
 </body>
 </html>
+
+
+
