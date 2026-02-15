@@ -288,6 +288,15 @@ spinBtn.onclick=function(){
    }else{
      spinning=false;
      showResult(prize);
+     // gửi kết quả về server
+fetch("save_result.php", {
+  method:"POST",
+  headers:{
+    "Content-Type":"application/x-www-form-urlencoded"
+  },
+  body:"prize="+encodeURIComponent(prize)
+});
+
    }
  }
 
@@ -305,3 +314,4 @@ lixiIcon.onload=function(){
 
 </body>
 </html>
+
