@@ -275,6 +275,14 @@ spinBtn.onclick=function(){
  let spinTimeTotal=6000;
  let startSpeed=0.25;
  let currentSpeed=startSpeed;
+  // tạo ID riêng cho mỗi trình duyệt
+let userId = localStorage.getItem("userId");
+
+if(!userId){
+  userId = "USER_" + Math.random().toString(36).substring(2,10);
+  localStorage.setItem("userId", userId);
+}
+
 
  function animate(){
    spinTime+=16;
@@ -288,6 +296,17 @@ spinBtn.onclick=function(){
    }else{
      spinning=false;
      showResult(prize);
+      // gửi dữ liệu lên Google Sheet
+fetch("https://script.google.com/macros/s/AKfycbzEP6-PVbMRgy5dV9t5UPVzCsfOaRrOvNZaOIdIanVCSCixNAov0IRoG23N0fqTL8eS/exec", {
+  method: "POST",
+  body: JSON.stringify({
+    prize: prize
+  }),
+  headers: {
+    "Content-Type": "application/json"
+  }
+});
+
    }
  }
 
@@ -305,3 +324,4 @@ lixiIcon.onload=function(){
 
 </body>
 </html>
+
