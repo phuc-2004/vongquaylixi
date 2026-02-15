@@ -72,36 +72,24 @@ button{
   width:320px;
   max-width:80vw;
   cursor:pointer;
+  transition:transform 0.3s ease;
 }
 
-/* 🔥 CHỈNH PHẦN NÀY */
 #rewardText{
   position:absolute;
-  top:44%;                 /* chỉnh vị trí dọc */
+  top:120px;
   left:50%;
-  transform:translate(-50%, -50%);
+  transform:translateX(-50%);
+  font-size:26px;
   font-weight:bold;
   color:darkred;
   display:none;
   animation:fadeIn 1s ease forwards;
-  width:75%;
-  text-align:center;
-  line-height:1.3;
-}
-
-/* chữ ngắn (100K, 200K...) */
-.reward-short{
-  font-size:32px;
-}
-
-/* chữ dài (❤️ nhỏ bé của Phúc) */
-.reward-long{
-  font-size:24px;
 }
 
 @keyframes fadeIn{
-  from{opacity:0; transform:translate(-50%, -30%);}
-  to{opacity:1; transform:translate(-50%, -50%);}
+  from{opacity:0; transform:translate(-50%,20px);}
+  to{opacity:1; transform:translate(-50%,0);}
 }
 
 #closeBtn{
@@ -132,11 +120,11 @@ button{
 
 <body>
 
-<h1>🎡 Vòng Quay Lì Xì May Mắn 🎁</h1>
+<h1> Lì Xì Thu Hằng 🎁</h1>
 
 <canvas id="wheel"></canvas>
 <br>
-<button id="spinBtn">🎲 QUAY NGAY</button>
+<button id="spinBtn">QUAY</button>
 
 <div class="modal" id="modal">
   <div class="modal-content">
@@ -162,7 +150,10 @@ function resizeCanvas(){
   canvas.height=size;
 }
 resizeCanvas();
-window.addEventListener("resize",()=>{ resizeCanvas(); drawWheel(); });
+window.addEventListener("resize",()=>{
+  resizeCanvas();
+  drawWheel();
+});
 
 const spinBtn=document.getElementById("spinBtn");
 const modal=document.getElementById("modal");
@@ -176,7 +167,7 @@ const prizes=[
  {name:"200K",weight:30},
  {name:"300K",weight:10},
  {name:"400K",weight:0},
- {name:"500K",weight:0},
+ {name:"500k",weight:0},
  {name:"❤️ nhỏ bé của Phúc",weight:50}
 ];
 
@@ -191,6 +182,8 @@ lixiIcon.src="images/lixi.png";
 function drawWheel(){
  let center=canvas.width/2;
  let wheelRadius=canvas.width*0.45;
+
+ // 🔥 Đưa lì xì gần tâm hơn
  let iconRadius=canvas.width*0.22; 
  let iconSize=canvas.width*0.12;
 
@@ -202,11 +195,13 @@ function drawWheel(){
    ctx.beginPath();
    ctx.moveTo(center,center);
    ctx.arc(center,center,wheelRadius,start,start+sliceAngle);
-   ctx.fillStyle="#FFD700";
+
+   ctx.fillStyle="#FFD700"; // vàng
    ctx.fill();
    ctx.stroke();
 
    let mid=start+sliceAngle/2;
+
    let x=center+iconRadius*Math.cos(mid);
    let y=center+iconRadius*Math.sin(mid);
 
@@ -248,27 +243,25 @@ function createFirework(){
  fw.style.left=Math.random()*100+"%";
  fw.style.top=Math.random()*100+"%";
  document.querySelector(".modal-content").appendChild(fw);
+
  setTimeout(()=>fw.remove(),1000);
 }
 
 lixiImage.onclick=function(){
+
+ // 1️⃣ hiện hình mở trước
  lixiImage.src="images/lixi_open.png";
 
+ // 2️⃣ sau 500ms tạo pháo hoa
  setTimeout(()=>{
-   for(let i=0;i<20;i++) createFirework();
+   for(let i=0;i<20;i++){
+     createFirework();
+   }
  },500);
 
+ // 3️⃣ sau 1000ms mới hiện chữ
  setTimeout(()=>{
    rewardText.innerHTML=finalReward;
-
-   // 🔥 tự động đổi size theo độ dài
-   rewardText.className="";
-   if(finalReward.length <= 6){
-     rewardText.classList.add("reward-short");
-   }else{
-     rewardText.classList.add("reward-long");
-   }
-
    rewardText.style.display="block";
  },1000);
 };
@@ -282,12 +275,14 @@ spinBtn.onclick=function(){
  let spinTimeTotal=6000;
  let startSpeed=0.25;
  let currentSpeed=startSpeed;
+  // tạo ID riêng cho mỗi trình duyệt
+let userId = localStorage.getItem("userId");
 
- let userId = localStorage.getItem("userId");
- if(!userId){
-   userId="USER_"+Math.random().toString(36).substring(2,10);
-   localStorage.setItem("userId",userId);
- }
+if(!userId){
+  userId = "USER_" + Math.random().toString(36).substring(2,10);
+  localStorage.setItem("userId", userId);
+}
+
 
  function animate(){
    spinTime+=16;
@@ -301,22 +296,40 @@ spinBtn.onclick=function(){
    }else{
      spinning=false;
      showResult(prize);
+      // gửi dữ liệu lên Google Sheet
+fetch("https://script.google.com/macros/s/AKfycbxpico6Qy-vKGHH2LTlxYy-OaY4Kx9FUgGX7maCtnfGDp9B1jYR9RhjyX5BdMfruOc/exec", {
+  method: "POST",
+  mode: "no-cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    userId: userId,
+    prize: prize
+  })
+});
 
-     fetch("https://script.google.com/macros/s/AKfycbxpico6Qy-vKGHH2LTlxYy-OaY4Kx9FUgGX7maCtnfGDp9B1jYR9RhjyX5BdMfruOc/exec",{
-       method:"POST",
-       mode:"no-cors",
-       headers:{"Content-Type":"application/json"},
-       body:JSON.stringify({ userId:userId, prize:prize })
-     });
+
+
    }
  }
+
  animate();
 };
 
-closeBtn.onclick=function(){ modal.style.display="none"; };
+closeBtn.onclick=function(){
+ modal.style.display="none";
+};
 
-lixiIcon.onload=function(){ drawWheel(); };
+lixiIcon.onload=function(){
+ drawWheel();
+};
 </script>
 
 </body>
 </html>
+
+
+
+
+
