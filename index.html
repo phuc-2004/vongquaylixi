@@ -13,6 +13,7 @@ body{
   margin:0;
   padding:0;
   min-height:100vh;
+  overflow-x:hidden;
 }
 
 h1{
@@ -59,6 +60,7 @@ button{
   border-radius:25px;
   padding:30px;
   box-shadow:0 0 25px rgba(0,0,0,0.4);
+  position:relative;
 }
 
 .lixiBox{
@@ -70,7 +72,7 @@ button{
   width:320px;
   max-width:80vw;
   cursor:pointer;
-  transition:transform 0.4s ease;
+  transition:transform 0.3s ease;
 }
 
 #rewardText{
@@ -78,14 +80,16 @@ button{
   top:120px;
   left:50%;
   transform:translateX(-50%);
-  font-size:24px;
+  font-size:26px;
   font-weight:bold;
   color:darkred;
   display:none;
+  animation:fadeIn 1s ease forwards;
 }
 
-#rewardText.show{
-  display:block;
+@keyframes fadeIn{
+  from{opacity:0; transform:translate(-50%,20px);}
+  to{opacity:1; transform:translate(-50%,0);}
 }
 
 #closeBtn{
@@ -96,6 +100,20 @@ button{
   background:darkred;
   color:white;
   cursor:pointer;
+}
+
+/* 🎆 pháo hoa */
+.firework{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  animation:explode 1s ease-out forwards;
+}
+
+@keyframes explode{
+  from{transform:scale(0); opacity:1;}
+  to{transform:scale(4); opacity:0;}
 }
 </style>
 </head>
@@ -164,7 +182,9 @@ lixiIcon.src="images/lixi.png";
 function drawWheel(){
  let center=canvas.width/2;
  let wheelRadius=canvas.width*0.45;
- let iconRadius=canvas.width*0.32;
+
+ // 🔥 Đưa lì xì gần tâm hơn
+ let iconRadius=canvas.width*0.22; 
  let iconSize=canvas.width*0.12;
 
  ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -176,8 +196,7 @@ function drawWheel(){
    ctx.moveTo(center,center);
    ctx.arc(center,center,wheelRadius,start,start+sliceAngle);
 
-   // 🟡 MÀU VÀNG
-   ctx.fillStyle="#FFD700";
+   ctx.fillStyle="#FFD700"; // vàng
    ctx.fill();
    ctx.stroke();
 
@@ -213,15 +232,38 @@ function getPrize(){
 function showResult(prize){
  finalReward=prize;
  lixiImage.src="images/lixi.png";
- rewardText.innerHTML="";
- rewardText.classList.remove("show");
+ rewardText.style.display="none";
  modal.style.display="flex";
 }
 
+function createFirework(){
+ const fw=document.createElement("div");
+ fw.className="firework";
+ fw.style.background=`hsl(${Math.random()*360},100%,50%)`;
+ fw.style.left=Math.random()*100+"%";
+ fw.style.top=Math.random()*100+"%";
+ document.querySelector(".modal-content").appendChild(fw);
+
+ setTimeout(()=>fw.remove(),1000);
+}
+
 lixiImage.onclick=function(){
+
+ // 1️⃣ hiện hình mở trước
  lixiImage.src="images/lixi_open.png";
- rewardText.innerHTML=finalReward;
- rewardText.classList.add("show");
+
+ // 2️⃣ sau 500ms tạo pháo hoa
+ setTimeout(()=>{
+   for(let i=0;i<20;i++){
+     createFirework();
+   }
+ },500);
+
+ // 3️⃣ sau 1000ms mới hiện chữ
+ setTimeout(()=>{
+   rewardText.innerHTML=finalReward;
+   rewardText.style.display="block";
+ },1000);
 };
 
 spinBtn.onclick=function(){
@@ -230,20 +272,15 @@ spinBtn.onclick=function(){
 
  let prize=getPrize();
  let spinTime=0;
- let spinTimeTotal=6000;   // quay lâu hơn → chậm hơn
- let startSpeed=0.25;      // tốc độ ban đầu nhỏ hơn
+ let spinTimeTotal=6000;
+ let startSpeed=0.25;
  let currentSpeed=startSpeed;
 
  function animate(){
    spinTime+=16;
-
    let progress=spinTime/spinTimeTotal;
-
-   // giảm tốc mượt
    currentSpeed=startSpeed*(1-progress);
-
    angle+=currentSpeed;
-
    drawWheel();
 
    if(spinTime < spinTimeTotal){
