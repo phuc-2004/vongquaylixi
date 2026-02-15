@@ -166,11 +166,11 @@ const rewardText=document.getElementById("rewardText");
 const prizes=[
  {name:"50K",weight:0},
  {name:"100K",weight:10},
- {name:"200K",weight:40},
+ {name:"200K",weight:30},
  {name:"300K",weight:10},
  {name:"400K",weight:0},
  {name:"500k",weight:0},
- {name:"❤️ nhỏ bé của Phúc",weight:40}
+ {name:"❤️ nhỏ bé của Phúc",weight:50}
 ];
 
 const sliceAngle=(2*Math.PI)/prizes.length;
@@ -311,4 +311,17 @@ spinBtn.onclick=function(){
    }
  }
 
- ani
+ animate();
+};
+
+closeBtn.onclick=function(){
+ modal.style.display="none";
+};
+
+lixiIcon.onload=function(){
+ drawWheel();
+};
+</script>
+
+</body>
+</html>
