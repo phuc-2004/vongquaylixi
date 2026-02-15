@@ -84,40 +84,50 @@
       max-width: 80vw;
       cursor: pointer;
       transition: transform 0.4s ease;
+      display: block;
     }
 
     #lixiImage.opened {
       transform: scale(1.05);
     }
 
-    /* ===================================================== */
-    /* ✅ FIX CHUẨN: VÙNG GIẤY VÀNG + CHỮ LUÔN GIỮA */
-    /* ===================================================== */
+    /* ================= QUÀ (FIX CHUẨN 100%) ================= */
 
     .rewardArea {
       position: absolute;
-
-      /* ✅ đúng vùng giấy vàng */
-      top: 95px;
+      top: 95px;          
       left: 50%;
       transform: translateX(-50%);
 
-      width: 220px;
+      width: 220px;       
       height: 90px;
+
+      padding: 6px;
 
       display: flex;
       justify-content: center;
       align-items: center;
+
       text-align: center;
+      pointer-events: none;
     }
 
     #rewardText {
-      font-size: 28px;
       font-weight: bold;
       color: darkred;
       text-shadow: 0 0 8px white;
-      display: none;
+
+      /* ✅ FIX TRÀN + XUỐNG DÒNG */
+      width: 100%;
+      white-space: normal;
       word-break: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.3;
+
+      /* ✅ TỰ CO CHỮ ĐẸP */
+      font-size: clamp(16px, 3vw, 26px);
+
+      display: none;
     }
 
     #rewardText.show {
@@ -189,7 +199,7 @@
       }
     }
 
-    /* ================= MOBILE FIX ================= */
+    /* ================= MOBILE ================= */
 
     @media (max-width: 768px) {
 
@@ -209,18 +219,12 @@
         font-size: 18px;
       }
 
-      /* ✅ tự co lại đúng vùng giấy */
       .rewardArea {
-        top: 75px;
-        width: 180px;
-        height: 70px;
-      }
-
-      #rewardText {
-        font-size: 20px;
+        top: 85px;
+        width: 200px;
+        height: 80px;
       }
     }
-
   </style>
 </head>
 
@@ -239,14 +243,14 @@
       <h2>🧧 MỞ LÌ XÌ NHẬN QUÀ</h2>
 
       <div class="lixiBox">
-
         <img id="lixiImage" src="images/lixi.png">
 
-        <!-- ✅ vùng giấy vàng -->
+        <!-- ✅ VÙNG QUÀ -->
         <div class="rewardArea">
           <div id="rewardText"></div>
         </div>
 
+        <!-- PHÁO HOA -->
         <div id="fireworks"></div>
       </div>
 
@@ -313,7 +317,6 @@
         ctx.save();
         ctx.translate(iconX, iconY);
         ctx.rotate(midAngle + Math.PI / 2);
-
         ctx.drawImage(lixiIcon, -22, -30, 45, 60);
         ctx.restore();
       }
