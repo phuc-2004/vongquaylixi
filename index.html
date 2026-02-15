@@ -2,6 +2,8 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Vòng Quay Lì Xì May Mắn</title>
 
   <style>
@@ -11,6 +13,7 @@
       background: linear-gradient(#fff5d6, #ffe4a8);
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
 
     h1 {
@@ -21,6 +24,8 @@
 
     canvas {
       margin-top: 30px;
+      max-width: 90vw;
+      height: auto;
     }
 
     button {
@@ -56,6 +61,7 @@
     .modal-content {
       background: white;
       width: 650px;
+      max-width: 90%;
       border-radius: 25px;
       padding: 30px;
       position: relative;
@@ -77,6 +83,7 @@
 
     #lixiImage {
       width: 320px;
+      max-width: 80vw;
       cursor: pointer;
       transition: transform 0.4s ease;
     }
@@ -92,12 +99,10 @@
       top: 120px;
       left: 50%;
       transform: translateX(-50%);
-
       font-size: 26px;
       font-weight: bold;
       color: darkred;
       text-shadow: 0 0 6px white;
-
       display: none;
     }
 
@@ -169,6 +174,38 @@
         opacity: 0;
       }
     }
+
+    /* ================= MOBILE RESPONSIVE ================= */
+    @media (max-width: 768px) {
+
+      h1 {
+        font-size: 26px;
+        margin-top: 20px;
+      }
+
+      canvas {
+        width: 90vw;
+        height: 90vw;
+        max-width: 380px;
+        max-height: 380px;
+      }
+
+      button {
+        width: 80%;
+        font-size: 18px;
+        padding: 12px;
+      }
+
+      #rewardText {
+        font-size: 22px;
+        top: 95px;
+      }
+
+      .modal-content h2 {
+        font-size: 24px;
+      }
+    }
+
   </style>
 </head>
 
@@ -208,10 +245,6 @@
     const lixiImage = document.getElementById("lixiImage");
     const rewardText = document.getElementById("rewardText");
 
-    /* ===============================
-       🎁 PHẦN THƯỞNG + TỶ LỆ
-    =============================== */
-
     const prizes = [
       { name: "10K", weight: 0 },
       { name: "50K", weight: 0 },
@@ -228,30 +261,25 @@
     let spinning = false;
     let finalReward = "";
 
-    // Load icon lì xì
     const lixiIcon = new Image();
     lixiIcon.src = "images/lixi.png";
 
-    /* ===============================
-       VẼ VÒNG QUAY (1 MÀU DUY NHẤT)
-    =============================== */
     function drawWheel() {
       let center = canvas.width / 2;
 
       for (let i = 0; i < prizes.length; i++) {
         let start = angle + i * sliceAngle;
 
-        // ✅ tất cả ô cùng 1 màu
         ctx.beginPath();
         ctx.moveTo(center, center);
         ctx.arc(center, center, 220, start, start + sliceAngle);
 
-        ctx.fillStyle = "#FFD84D"; // ⭐ màu vàng đồng nhất
+        ctx.fillStyle = "#FFD84D";
         ctx.fill();
+
         ctx.strokeStyle = "black";
         ctx.stroke();
 
-        // ICON LÌ XÌ hướng đáy vào tâm
         let midAngle = start + sliceAngle / 2;
         let radius = 150;
 
@@ -263,14 +291,11 @@
 
         ctx.save();
         ctx.translate(iconX, iconY);
-
         ctx.rotate(midAngle + Math.PI / 2);
-
         ctx.drawImage(lixiIcon, -w / 2, -h / 2, w, h);
         ctx.restore();
       }
 
-      // Mũi tên chỉ
       ctx.fillStyle = "darkred";
       ctx.beginPath();
       ctx.moveTo(center - 15, 20);
@@ -279,24 +304,16 @@
       ctx.fill();
     }
 
-    /* ===============================
-       RANDOM THEO TỶ LỆ
-    =============================== */
     function getPrize() {
       let totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
       let rand = Math.random() * totalWeight;
 
       for (let prize of prizes) {
-        if (rand < prize.weight) {
-          return prize.name;
-        }
+        if (rand < prize.weight) return prize.name;
         rand -= prize.weight;
       }
     }
 
-    /* ===============================
-       HIỂN THỊ MODAL
-    =============================== */
     function showResult(prize) {
       finalReward = prize;
 
@@ -309,9 +326,6 @@
       modal.style.display = "flex";
     }
 
-    /* ===============================
-       PHÁO HOA 🎆
-    =============================== */
     function launchFireworks() {
       const fireworks = document.getElementById("fireworks");
       fireworks.innerHTML = "";
@@ -338,9 +352,6 @@
       setTimeout(() => fireworks.innerHTML = "", 1000);
     }
 
-    /* ===============================
-       CLICK MỞ LÌ XÌ
-    =============================== */
     lixiImage.onclick = function () {
       lixiImage.src = "images/lixi_open.png";
       lixiImage.classList.add("opened");
@@ -351,9 +362,6 @@
       launchFireworks();
     };
 
-    /* ===============================
-       QUAY VÒNG
-    =============================== */
     spinBtn.onclick = function () {
       if (spinning) return;
 
@@ -378,14 +386,10 @@
       }, 50);
     };
 
-    /* ===============================
-       ĐÓNG MODAL
-    =============================== */
     closeBtn.onclick = function () {
       modal.style.display = "none";
     };
 
-    // Vẽ ban đầu
     lixiIcon.onload = function () {
       drawWheel();
     };
